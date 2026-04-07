@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  receipts  Receipt[] @relation("payer")
+  assignments Assignment[]
+  debtsFrom Debt[]    @relation("fromUser")
+  debtsTo   Debt[]    @relation("toUser")
+}
+
+model Receipt {
+  id        Int       @id @default(autoincrement())
+  payerId   Int
+  payer     User      @relation("payer", fields: [payerId], references: [id])
+  imageUrl  String
+  createdAt DateTime  @default(now())
+  items     Item[]
+}
+
+model Item {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Float
+  receiptId Int
+  receipt   Receipt  @relation(fields: [receiptId], references: [id])
+  assignment Assignment?
+}
+
+model Assignment {
+  id      Int   @id @default(autoincrement())
+  itemId  Int   @unique
+  userId  Int
+  item    Item  @relation(fields: [itemId], references: [id])
+  user    User  @relation(fields: [userId], references: [id])
+}
+
+model Debt {
+  id        Int      @id @default(autoincrement())
+  fromId    Int
+  toId      Int
+  amount    Float
+  createdAt DateTime @default(now())
+  reminderSentAt DateTime?
+  from      User     @relation("fromUser", fields: [fromId], references: [id])
+  to        User     @relation("toUser", fields: [toId], references: [id])
+}
