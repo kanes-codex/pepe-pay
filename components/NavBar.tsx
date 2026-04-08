@@ -1,25 +1,10 @@
 "use client";
 
+import { useUser } from "@/app/hooks/useUser";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const [userName, setUserName] = useState("");
-
-  useEffect(() => {
-    async function fetchUser() {
-      const userId = localStorage.getItem("userId");
-      if (!userId) return;
-
-      const res = await fetch("/api/users");
-      const users = await res.json();
-
-      const user = users.find((u: any) => u.id === Number(userId));
-      if (user) setUserName(user.name);
-    }
-
-    fetchUser();
-  }, []);
+  const user = useUser();
 
   const logout = () => {
     localStorage.removeItem("userId");
@@ -34,7 +19,7 @@ export default function Navbar() {
       </div>
 
       <div className="flex gap-4 items-center">
-        <span>{userName}</span>
+        <span>{user?.name}</span>
         <button
           onClick={logout}
           className="text-sm bg-red-500 px-2 py-1 rounded"

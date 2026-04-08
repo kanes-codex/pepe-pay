@@ -1,5 +1,6 @@
 "use client";
 
+import { REMINDER_TEMPLATES } from "@/lib/remindersTemplates";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,21 +19,6 @@ interface DisplayReminder extends Reminder {
   message: string;
   image: string;
 }
-
-const REMINDER_TEMPLATES = [
-  {
-    message: "You still haven’t paid… interesting 👀",
-    image: "/pepe-smallpunch.png",
-  },
-  {
-    message: "Friendly reminder 🙂 pay up.",
-    image: "/pepe-bigpunch.png",
-  },
-  {
-    message: "This is getting awkward now 😎",
-    image: "/pepe-shotgun.png",
-  },
-];
 
 export default function RemindersPage() {
   const [reminders, setReminders] = useState<DisplayReminder[]>([]);

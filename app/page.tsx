@@ -5,15 +5,13 @@ import Spinner from "@/components/Spinner";
 import { Item } from "./types";
 import ItemRow from "@/components/ItemRow";
 import { useRouter } from "next/navigation";
+import { useUser } from "./hooks/useUser";
 
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
   const [items, setItems] = useState<Item[]>([]);
 
-  const payer = "Kane";
-
   const [participants, setParticipants] = useState<string[]>([]);
-  const [newName, setNewName] = useState("");
   const [activeUser, setActiveUser] = useState<number | null>(0);
 
   const [assignments, setAssignments] = useState<Record<number, number>>({});
@@ -31,6 +29,8 @@ export default function Home() {
   const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null);
 
   const router = useRouter();
+  const user = useUser();
+  const payer = user?.name;
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -171,10 +171,7 @@ export default function Home() {
 
       console.log("Users:", users);
 
-      const getUserId = (name: string) =>
-        users.find((u: any) => u.name === name)?.id;
-
-      const payerId = getUserId(payer);
+      const payerId = user?.id ?? 0;
 
       // 2️⃣ Calculate debts
       const calculatedDebts = participants
@@ -185,7 +182,7 @@ export default function Home() {
 
           return {
             fromName: name,
-            fromId: getUserId(name),
+            fromId: payerId,
             toId: payerId,
             amount: total,
           };
@@ -264,7 +261,7 @@ export default function Home() {
               <option value="">Select friend</option>
 
               {friends
-                .filter((f) => f.name !== payer) // exclude payer
+                .filter((f) => f.name !== user?.name) // exclude payer
                 .map((friend) => (
                   <option key={friend.id} value={friend.id}>
                     {friend.name}
